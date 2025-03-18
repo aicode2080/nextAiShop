@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>俄罗斯方块</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="tetris" width="300" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('tetris');
+        const context = canvas.getContext('2d');
+
+        context.scale(30, 30); // 缩放画布
+
+        // 俄罗斯方块的形状
+        const tetrominoes = [
+            [[1, 1, 1, 1]], // I
+            [[1, 1], [1, 1]], // O
+            [[0, 1, 0], [1, 1, 1]], // T
+            [[1, 1, 0], [0, 1, 1]], // S
+            [[0, 1, 1], [1, 1, 0]], // Z
+            [[1, 0, 0], [1, 1, 1]], // L
+            [[0, 0, 1], [1, 1, 1]]  // J
+        ];
+
+        let board = Array.from({ length: 20 }, () => Array(10).fill(0));
+        let currentTetromino;
+        let currentPosition;
+
+        function drawBoard() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            for (let r = 0; r < board.length; r++) {
+                for (let c = 0; c < board[r].length; c++) {
+                    if (board[r][c]) {
+                        context.fillStyle = 'blue';
+                        context.fillRect(c, r, 1, 1);
+                    }
+                }
+            }
+        }
+
+        function drawTetromino() {
+            currentTetromino.shape.forEach((row, r) => {
+                row.forEach((value, c) => {
+                    if (value) {
+                        context.fillStyle = 'red';
+                        context.fillRect(currentPosition.x + c, currentPosition.y + r, 1, 1);
+                    }
+                });
+            });
+        }
+
+        function collide() {
+            return currentTetromino.shape.some((row, r) => {
+                return row.some((value, c) => {
+                    if (value) {
+                        const newX = currentPosition.x + c;
+                        const newY = currentPosition.y + r;
+                        return newY >= board.length || newX < 0 || newX >= board[0].length || board[newY] && board[newY][newX];
+                    }
+                    return false;
+                });
+            });
+        }
+
+        function merge() {
+            currentTetromino.shape.forEach((row, r) => {
+                row.forEach((value, c) => {
+                    if (value) {
+                        board[currentPosition.y + r][currentPosition.x + c] = 1;
+                    }
+                });
+            });
+        }
+
+        function resetTetromino() {
+            const randomIndex = Math.floor(Math.random() * tetrominoes.length);
+            currentTetromino = { shape: tetrominoes[randomIndex] };
+            currentPosition = { x: 3, y: 0 };
+            if (collide()) {
+                alert('游戏结束！');
+                board = Array.from({ length: 20 }, () => Array(10).fill(0));
+            }
+        }
+
+        function drop() {
+            currentPosition.y++;
+            if (collide()) {
+                currentPosition.y--;
+                merge();
+                resetTetromino();
+            }
+        }
+
+        function update() {
+            drawBoard();
+            drawTetromino();
+            drop();
+            setTimeout(update, 1000);
+        }
+
+        resetTetromino();
+        update();
+    </script>
+</body>
+</html>

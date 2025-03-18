@@ -1,118 +1,81 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+// In App.js in a new project
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import * as React from 'react';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { HomeScreen } from './page/Home';
+import ClassFication from './page/class-fication';
+import { sc375, ShopTab } from './page/shop/tabBar';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Image } from 'react-native';
+import { tabIcons } from './page/constants/tab';
+import vipCard from './page/vip-card';
+import shopCart from './page/shop-cart';
+import userCenter from './page/user-center';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createNativeStackNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const Tab = createBottomTabNavigator();
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
+function switchIcon(name: string, focused: boolean) {
+  switch (name) {
+    case '首页':
+      return focused ? tabIcons[name][0] : tabIcons[name][1];
+      break;
+    case '分类':
+      return focused ? tabIcons[name][0] : tabIcons[name][1];
+      break;
+    case '友阿购物卡':
+      return focused ? tabIcons[name][0] : tabIcons[name][1];
+      break;
+    case '购物车':
+      return focused ? tabIcons[name][0] : tabIcons[name][1];
+      break;
+    case '我的':
+      return focused ? tabIcons[name][0] : tabIcons[name][1];
+    default:
+      break;
+  }
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+function App() {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Tab.Navigator
+        initialRouteName='首页'
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            return (
+              <Image
+                style={{
+                  width: sc375(24),
+                  height: sc375(24),
+                }}
+                source={switchIcon(route.name, focused)}
+              />
+            );
+          },
+          tabBarActiveTintColor: '#7c1bff',
+          tabBarInactiveTintColor: 'gray',
+        })}>
+        <Tab.Screen name="首页" key={'home'} component={HomeScreen} />
+        <Tab.Screen
+          name="分类"
+          key={'classfication'}
+          component={ClassFication}
+        />
+        <Tab.Screen
+          name="友阿购物卡"
+          key={'yacard'}
+          component={vipCard}
+        />
+        <Tab.Screen name="购物车" key={'cart'} component={shopCart} />
+        <Tab.Screen name="我的" key={'user'} component={userCenter} />
+      </Tab.Navigator>
+      {/* <ShopTab selectedIndex={0} /> */}
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;

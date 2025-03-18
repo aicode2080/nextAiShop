@@ -1,0 +1,1 @@
+export const imgPrix = 'https://img.tepin.hk/';
